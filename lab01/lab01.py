@@ -22,7 +22,20 @@ def captured_output():
 
 # implement this function
 def is_perfect(n):
-    pass
+    divisors = []
+    for i in range (1, n):
+        result = n/i
+        intresult = float(int(n/i))
+        if(result == intresult): ##i is a proper divisor
+            if(i in divisors):
+                pass
+            else:
+                divisors.append(i)
+    sum = 0
+    for j in divisors:
+        sum += j
+    perfect = sum == n
+    return (perfect)
 
 # (3 points)
 def test1():
@@ -40,7 +53,11 @@ def test1():
 
 # implement this function
 def multiples_of_3_and_5(n):
-    pass
+    sum = 0
+    for i in range (1,n):
+        if(i%3 == 0 or i%5 == 0):
+            sum+=i
+    return sum
 
 # (3 points)
 def test2():
@@ -53,7 +70,20 @@ def test2():
 # EXERCISE 3
 #################################################################################
 def integer_right_triangles(p):
-    pass
+    num = 0
+    sidesfound = []
+    for a in range(1, int(p/2)):
+        b = ((p/2)-a)/(1-(a/p))
+        if(b - int(b) < .00000001):
+            if(a in sidesfound):
+                pass
+            else:
+                sidesfound.append(b)
+                num += 1
+    return num
+
+
+        
 
 def test3():
     tc = unittest.TestCase()
@@ -66,8 +96,24 @@ def test3():
 #################################################################################
 
 # implement this function
-def gen_pattern(chars):
-    pass
+def gen_pattern(chars): 
+    sofar = list()
+    length = 4*len(chars) - 3
+    reverse = list(chars[::-1])
+    for i in range(len(reverse)):
+        letters = reverse[i]
+        for j in range(i-1, -1, -1):
+            letters = reverse[j] + letters + reverse[j]
+        line = ".".join(letters).center(length, ".")
+        print(line)
+        if(i!=len(reverse)-1):
+            sofar.append(line)
+    for st in sofar[::-1]:
+        print(st)
+        
+        
+
+    
 
 def test4():
     tc = unittest.TestCase()
