@@ -34,7 +34,19 @@ ROMEO_SOLILOQUY = """
 # Implement this function
 def compute_ngrams(toks, n=2):
     """Returns an n-gram dictionary based on the provided list of tokens."""
-    pass
+    thengrams = list()
+    for i in range(len(toks)-n+1):
+        gram = tuple(toks[i:i+n])  
+        thengrams.append(gram)
+    d = {}
+    for gram in thengrams:
+        key = gram[0]
+        value = gram[1:]
+        if key not in d.keys():
+            d[key] = [value]
+        else:
+            d[key].append(value)
+    return d
 
 def test1():
     test1_1()
@@ -93,16 +105,34 @@ def test1_2():
 ################################################################################
 # Implement this function
 def gen_passage(ngram_dict, length=100):
-    pass
+    ptoks = []
+    p = ''
+    token = ''
+    while(len(ptoks) < length):
+        value = []
+        if token in ngram_dict.keys():
+            value = ngram_dict[token]
+        else:
+            key = random.choice(sorted(ngram_dict.keys()))
+            value = ngram_dict[key]
+        tupl = random.choice(value)
+        token = tupl[len(tupl) - 1]
+        ptoks.append(token)
+    p = ' '.join(ptoks)
+    return p
+
+
+    
 
 # 50 Points
 def test2():
     """Test case for random passage generation."""
     tc = TestCase()
-    random.seed(1234)
-    simple_toks = [t.lower() for t in 'I really really like cake.'.split()]
+   random.seed(1234)
+   simple_toks = [t.lower() for t in 'I really really like cake.'.split()]
+   
     tc.assertEqual(gen_passage(compute_ngrams(simple_toks), 10),
-                   'like cake. i really really really really like cake. i')
+                  'like cake. i really really really really like cake. i')
 
     random.seed(1234)
     romeo_toks = [t.lower() for t in ROMEO_SOLILOQUY.split()]
