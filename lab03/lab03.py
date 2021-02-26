@@ -9,6 +9,15 @@ S = TypeVar('S')
 # EXERCISE 1
 #################################################################################
 def mysort(lst: List[T], compare: Callable[[T, T], int]) -> List[T]:
+    for i in range(1, len(lst)):
+        for j in range(i, 0, -1):
+            result = compare(lst[j-1], lst[j])
+            if(result == 1): #left greater than right
+                lst[j], lst[j-1] = lst[j-1], lst[j]
+            elif(result == -1 or result == 0): #left less than or equal to right
+                pass
+    return lst
+    
     """
     This method should sort input list lst of elements of some type T.
 
@@ -17,17 +26,30 @@ def mysort(lst: List[T], compare: Callable[[T, T], int]) -> List[T]:
     right element, 1 if the left is larger than the right, and 0 if the two
     elements are equal.
     """
-    pass
+
 
 def mybinsearch(lst: List[T], elem: S, compare: Callable[[T, S], int]) -> int:
-    """
-    This method search for elem in lst using binary search.
+        start = 0 
+        end = len(lst)
+        while(start <= end and end <=len(lst)):
+            mid = int((start+end)/2)  
+            if mid==len(lst):
+                return -1       
+            result = compare(lst[mid], elem)
+            if(result == 0):
+                return mid
+            if(result == 1): ##lst[mid] larger than elem
+                end = mid-1
+            elif(result == -1): ##lst[mid] less than elem
+                start = mid+1
+        return -1
+    #"""
+    #This method search for elem in lst using binary search.
 
-    The elements of lst are compared using function compare. Returns the
-    position of the first (leftmost) match for elem in lst. If elem does not
-    exist in lst, then return -1.
-    """
-    pass
+    #The elements of lst are compared using function compare. Returns the
+    #position of the first (leftmost) match for elem in lst. If elem does not
+    #exist in lst, then return -1.
+    #"""
 
 class Student():
     """Custom class to test generic sorting and searching."""
@@ -106,13 +128,27 @@ def test1_5():
 # EXERCISE 2
 #################################################################################
 class PrefixSearcher():
-
+    lst = []
+    maximum = 0
     def __init__(self, document, k):
         """
         Initializes a prefix searcher using a document and a maximum
         search string length k.
         """
-        pass
+        self.maximum = k
+        lst = []
+        for i in range (0, len(document)):
+            start = i
+            end = i + k
+            if end > len(document):
+                end = len(document)
+            substr = document[start:end]
+            lst.append(substr)
+        
+        prefixcmp = lambda x,y: 0 if x == y else -1 if x < y else 1
+        self.lst = mysort(lst, prefixcmp)
+        
+
 
     def search(self, q):
         """
@@ -121,7 +157,12 @@ class PrefixSearcher():
         length up to n). If q is longer than n, then raise an
         Exception.
         """
-        pass
+        if len(q) > self.maximum:
+            raise Exception("String being searched is greater than maximum search string value permitted by PrefixSearcher.") 
+        for elem in self.lst: ##linear search 
+            if q in elem:
+                return True
+        return False
 
 # 30 Points
 def test2():
@@ -153,7 +194,6 @@ def test2_2():
     p = PrefixSearcher(md_text[0:1000],4)
     tc.assertTrue(p.search("Moby"))
     tc.assertTrue(p.search("Dick"))
-
 #################################################################################
 # EXERCISE 3
 #################################################################################
