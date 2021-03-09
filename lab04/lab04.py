@@ -340,12 +340,12 @@ class ArrayList:
 
     ### iteration ###
 
-    def __iter__(self):
+     def __iter__(self):
         """Supports iteration (via `iter(self)`)"""
         ### BEGIN SOLUTION
-        for i in range(len(self)):
-            elem = self.data[i]
-            return elem
+        for i in range(self.len):
+            yield self.data[i]
+
         ### END SOLUTION
 
 ################################################################################
