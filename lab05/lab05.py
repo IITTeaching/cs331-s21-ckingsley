@@ -55,9 +55,11 @@ class LinkedList:
         """Implements `self[idx] = x`"""
         assert(isinstance(idx, int))
         ### BEGIN SOLUTION
-        norm = self._normalize_idx(idx)
-        if norm >= len(self):
+        if idx >= len(self):
             raise IndexError
+
+        norm = self._normalize_idx(idx)
+        
             
         cur = self.head.next
         
@@ -79,7 +81,10 @@ class LinkedList:
         for i in range(0, norm):
             cur = cur.next
 
-        cur.val = value
+        cur.next.prior = cur.prior
+        cur.prior.next = cur.next
+        cur.length = self.length - 1
+
         ### END SOLUTION
 
     ### cursor-based access ###
@@ -119,7 +124,7 @@ class LinkedList:
             offset += len(self)
         for i in range(0, offset):
             self.cursor = self.cursor.next
-            if self.head = self.cursor:
+            if self.head == self.cursor:
                 self.cursor = self.cursor.next
 
         ### END SOLUTION
@@ -129,9 +134,9 @@ class LinkedList:
         new node"""
         ### BEGIN SOLUTION
         nval = self.Node(value, prior=self.cursor, next=self.cursor.next)
-        self.cursor.next.prior = new
-        self.cursor.next = new
-        self.cursor = new
+        self.cursor.next.prior = nval
+        self.cursor.next = nval
+        self.cursor = nval
         self.length += 1
         ### END SOLUTION
 
@@ -185,7 +190,7 @@ class LinkedList:
         assert(pos>=0 and pos <= len(self))
         cur = self.head
         for i in range(0, idx):
-        cur = cur.next
+            cur = cur.next
         nval = self.Node(value, prior=cur, next=cur.next)
         cur.next.prior = nval
         cur.next = nval
@@ -215,7 +220,8 @@ class LinkedList:
         wasFound = False
         for i in range(0, self.length):
             if(self[i] == value):
-                del self[x]
+                del self[i]
+                wasFound = True
 
         if not wasFound:
             raise ValueError()
@@ -247,7 +253,7 @@ class LinkedList:
         ### BEGIN SOLUTION
 
         for i in range(self.length):
-            if self[i] == valeu:
+            if self[i] == value:
                 return True
 
         return False
@@ -297,13 +303,13 @@ class LinkedList:
 
         if j == None:
             for x in range(i, self.length):
-                if self[x] == value
+                if self[x] == value:
                     return x
             
         else:
             j = self._normalize_idx()
             for y in range(i, j):
-                if self[y] == value
+                if self[y] == value:
                     return y
             
         raise ValueError()
