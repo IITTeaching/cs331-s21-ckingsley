@@ -51,6 +51,21 @@ def check_delimiters(expr):
     delim_closers = '})]>'
 
     ### BEGIN SOLUTION
+   
+    s = Stack()
+    for c in expr:
+        if c in delim_openers:
+            s.push(c)
+        if c in delim_closers:
+            if s.empty():
+                return False
+            else: #basically i am checking if the character "c" (which is a closing delimiter, by the way) is the pair of the delimiter being popped off the stack. So if c is "[" and popped is "]" then nothing happens (and we proceed.) However if c is "[" and p is ")" then we return False. 
+                popped = s.pop()
+                cindex = delim_closers.find(c)
+                pindex = delim_openers.find(popped)
+                if cindex != pindex:
+                    return False
+    return s.empty()
     ### END SOLUTION
 
 ################################################################################
@@ -121,6 +136,56 @@ def infix_to_postfix(expr):
     postfix = []
     toks = expr.split()
     ### BEGIN SOLUTION
+    def is_int(c):
+        try:
+            i = int(c)
+        except ValueError:
+            return False
+        return True
+    
+    def is_parens(c):
+        return c in '()'
+
+    def is_op(c):
+        return c in '+-*/'
+    
+
+    for c in toks:
+        if is_int(c):
+            postfix.append(c)
+
+        elif is_parens(c):
+            if c == '(':
+                ops.push(c)
+            elif c == ')':
+                for elem in ops:
+                    if elem == '(':
+                        break
+                    else:
+                        postfix.append(elem)
+                        ops.pop()
+                ##now, the final remaining element in 'ops' should be '(', and I remove it from the stack.
+                ops.pop()
+
+        elif is_op(c):
+            if ops.empty():
+                ops.push(c)
+            else:
+                #compare precenedence between top of "ops" stack and "c"
+                if ops.peek() != '(' and prec[c] <= prec[ops.peek()]:
+                    for elem in ops:
+                        if elem == '(' or prec[elem] < prec[c]:
+                            break
+                        else:
+                            postfix.append(elem)
+                            ops.pop()
+                
+                ops.push(c)
+                
+    for elem in ops:
+        if not is_parens(elem):
+            postfix.append(elem)
+
     ### END SOLUTION
     return ' '.join(postfix)
 
@@ -162,25 +227,73 @@ class Queue:
         self.tail = -1
 
     ### BEGIN SOLUTION
+    def is_full(self):
+        print(self.tail)
+        print(self.head)
+        if self.head == -1 and self.tail == -1:
+            return False
+
+        else:
+            for elem in self.data:
+                if elem == None:
+                    return False    
+            return True
     ### END SOLUTION
 
     def enqueue(self, val):
         ### BEGIN SOLUTION
-        ### END SOLUTION
+        print('Got here')
 
+        print(str(len(self.data)))
+
+        print(str(self.tail))
+
+        if self.tail == len(self.data) - 1: #we have reached the end of the queue
+            self.tail = 0
+        else:
+            self.tail += 1
+
+        print('Got here...')
+        
+        print(str(self.tail))
+        
+        if self.is_full(): 
+            raise RuntimeError("Queue is full.")
+
+        self.data[self.tail] = val
+        ### END SOLUTION
+        
     def dequeue(self):
         ### BEGIN SOLUTION
+        if self.empty():
+            raise RuntimeError("Queue is empty.")
+
+        self.head += 1
+        temp = self.data[self.head]
+        self.data[self.head] = None
+
+        if self.empty():
+            self.head = -1
+            self.tail = -1
+        
+        return temp
         ### END SOLUTION
 
     def resize(self, newsize):
         assert(len(self.data) < newsize)
         ### BEGIN SOLUTION
+        temp = [None] * newsize
+        for i in range(len(self.data)):
+            temp[i] = self.data[i]
+
+        self.data = temp
         ### END SOLUTION
 
     def empty(self):
         ### BEGIN SOLUTION
+        return self.head == self.tail
         ### END SOLUTION
-
+    
     def __bool__(self):
         return not self.empty()
 
@@ -194,6 +307,19 @@ class Queue:
 
     def __iter__(self):
         ### BEGIN SOLUTION
+        if self.empty():
+            raise RuntimeError("Queue is empty.")
+
+        i = self.head
+        while self.head != self.tail:
+            yield self.data[i]
+            if i == len(self.data) - 1:
+                i = 0
+            else:
+                i += 1
+            
+            
+            
         ### END SOLUTION
 
 ################################################################################

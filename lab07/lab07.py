@@ -14,10 +14,12 @@ class ExtensibleHashTable:
 
     def find_bucket(self, key):
         # BEGIN_SOLUTION
+
         # END_SOLUTION
 
     def __getitem__(self,  key):
         # BEGIN_SOLUTION
+        
         # END_SOLUTION
 
     def __setitem__(self, key, value):
