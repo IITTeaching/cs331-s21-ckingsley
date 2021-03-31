@@ -224,43 +224,28 @@ class Queue:
     def __init__(self, limit=10):
         self.data = [None] * limit
         self.head = -1
-        self.tail = -1
+        self.t = -1
 
-    ### BEGIN SOLUTION
-    def is_full(self):
-        print(self.tail)
-        print(self.head)
-        if self.head == -1 and self.tail == -1:
-            return False
-
-        else:
-            for elem in self.data:
-                if elem == None:
-                    return False    
-            return True
-    ### END SOLUTION
 
     def enqueue(self, val):
         ### BEGIN SOLUTION
-        print('Got here')
+        
+        self.t += 1
 
-        print(str(len(self.data)))
+        print(self.t)
 
-        print(str(self.tail))
-
-        if self.tail == len(self.data) - 1: #we have reached the end of the queue
-            self.tail = 0
+        if self.t == self.head:
+            raise RuntimeError("Queue is full")
+        elif self.t == len(self.data):
+            self.t = 0 #circle back to front
         else:
-            self.tail += 1
+            if self.data[self.t] != None:
+                raise RuntimeError("There is already a value there homie")
+            self.data[self.t] = val
 
-        print('Got here...')
-        
-        print(str(self.tail))
-        
-        if self.is_full(): 
-            raise RuntimeError("Queue is full.")
 
-        self.data[self.tail] = val
+
+        
         ### END SOLUTION
         
     def dequeue(self):
@@ -268,13 +253,12 @@ class Queue:
         if self.empty():
             raise RuntimeError("Queue is empty.")
 
-        self.head += 1
-        temp = self.data[self.head]
+        
         self.data[self.head] = None
-
+        temp = self.data[self.head]
         if self.empty():
             self.head = -1
-            self.tail = -1
+            self.t = -1
         
         return temp
         ### END SOLUTION
@@ -291,7 +275,7 @@ class Queue:
 
     def empty(self):
         ### BEGIN SOLUTION
-        return self.head == self.tail
+        return self.head == self.t
         ### END SOLUTION
     
     def __bool__(self):
@@ -311,7 +295,7 @@ class Queue:
             raise RuntimeError("Queue is empty.")
 
         i = self.head
-        while self.head != self.tail:
+        while self.head != self.t:
             yield self.data[i]
             if i == len(self.data) - 1:
                 i = 0
@@ -333,9 +317,15 @@ def test_queue_implementation_1():
     q = Queue(5)
     tc.assertEqual(q.data, [None] * 5)
 
+    print('got here')
+    
     for i in range(5):
         q.enqueue(i)
+    
 
+    print(q)
+
+    
     with tc.assertRaises(RuntimeError):
         q.enqueue(5)
 
@@ -360,7 +350,7 @@ def test_queue_implementation_2():
 
 	tc.assertFalse(q.empty())
 	tc.assertEqual(q.data.count(None), 9)
-	tc.assertEqual(q.head, q.tail)
+	tc.assertEqual(q.head, q.t)
 	tc.assertEqual(q.head, 5)
 
 	for i in range(9):
