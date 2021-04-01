@@ -222,89 +222,74 @@ def test_infix_to_postfix_3():
 ################################################################################
 class Queue:
     def __init__(self, limit=10):
+        self.len = limit
         self.data = [None] * limit
         self.head = -1
-        self.t = -1
-
+        self.tail = -1
 
     def enqueue(self, val):
-        ### BEGIN SOLUTION
-        
-        self.t += 1
-
-        print(self.t)
-
-        if self.t == self.head:
-            raise RuntimeError("Queue is full")
-        elif self.t == len(self.data):
-            self.t = 0 #circle back to front
+        if (self.tail + 1) % self.len == self.head:
+            raise RuntimeError
+        elif self.head == -1:
+            self.head = self.tail = 0
+            self.data[self.tail] = val
         else:
-            if self.data[self.t] != None:
-                raise RuntimeError("There is already a value there homie")
-            self.data[self.t] = val
+            self.tail = (self.tail + 1) % self.len
+            self.data[self.tail] = val
 
-
-
-        
-        ### END SOLUTION
-        
     def dequeue(self):
-        ### BEGIN SOLUTION
-        if self.empty():
-            raise RuntimeError("Queue is empty.")
+        if self.head == -1:
+            raise RuntimeError
+        elif self.head == self.tail:
+            temp = self.data[self.head]
+            self.data[self.head] = None
+            self.head = self.tail = -1
+            return temp
+        else:
+            temp = self.data[self.head]
+            self.data[self.head] = None
+            self.head = (self.head + 1) % self.len
+            return temp
 
+    def resize(self, newsize): ### TEST
+        assert(newsize > len(self.data))
+        newarray = [None]
+        for x in range(newsize-1):
+            newarray.append([None])
+
+        for i in range(self.len):
+            newarray[i] = self.dequeue()
         
-        self.data[self.head] = None
-        temp = self.data[self.head]
-        if self.empty():
-            self.head = -1
-            self.t = -1
+        self.data = newarray
         
-        return temp
-        ### END SOLUTION
+        self.head = 0
+        self.tail = self.len-1
 
-    def resize(self, newsize):
-        assert(len(self.data) < newsize)
-        ### BEGIN SOLUTION
-        temp = [None] * newsize
-        for i in range(len(self.data)):
-            temp[i] = self.data[i]
 
-        self.data = temp
-        ### END SOLUTION
+        self.len = newsize
 
     def empty(self):
-        ### BEGIN SOLUTION
-        return self.head == self.t
-        ### END SOLUTION
-    
+        for i in range(self.len):
+            if self.data[i] != None:
+                return False
+
+        return True
+
     def __bool__(self):
         return not self.empty()
 
     def __str__(self):
         if not(self):
             return ''
-        return ', '.join(str(x) for x in self)
+        return ', '.join(str(el) for el in self)
 
     def __repr__(self):
         return str(self)
 
     def __iter__(self):
-        ### BEGIN SOLUTION
-        if self.empty():
-            raise RuntimeError("Queue is empty.")
-
-        i = self.head
-        while self.head != self.t:
+        for i in range(self.head, self.tail+1):
             yield self.data[i]
-            if i == len(self.data) - 1:
-                i = 0
-            else:
-                i += 1
-            
-            
-            
-        ### END SOLUTION
+
 
 ################################################################################
 # QUEUE IMPLEMENTATION - TEST CASES
@@ -317,56 +302,68 @@ def test_queue_implementation_1():
     q = Queue(5)
     tc.assertEqual(q.data, [None] * 5)
 
-    print('got here')
+   # print('got here')
     
     for i in range(5):
+        #print(f' started {i}')
         q.enqueue(i)
+       # print(f' finished {i} ')
     
 
-    print(q)
-
     
-    with tc.assertRaises(RuntimeError):
+   
+    
+
+    with tc.assertRaises(RuntimeError): 
         q.enqueue(5)
 
-    for i in range(5):
-        tc.assertEqual(q.dequeue(), i)
+    
+    
+    #print(f'q after enqueuing: {[ elem for elem in q.data ]}')
+   # print(f'tail: {q.tail}')
 
+    for i in range(5):
+        #print(f'q: {[ elem for elem in q.data ]}')
+        #print(f' being dequeued: {q.data[q.head + 1]}, i: {i}')
+        tc.assertEqual(q.dequeue(), i)
+        #print(f' finished {i}')
+
+    #print(f'tail: {q.tail}, head: {q.head}')
     tc.assertTrue(q.empty())
 
 # points: 13
 def test_queue_implementation_2():
-	tc = TestCase()
+    tc = TestCase()
 
-	q = Queue(10)
+    q = Queue(10)
 
-	for i in range(6):
-	    q.enqueue(i)
+    for i in range(6):
+        q.enqueue(i)
 
-	tc.assertEqual(q.data.count(None), 4)
+    tc.assertEqual(q.data.count(None), 4)
 
-	for i in range(5):
-	    q.dequeue()
+    for i in range(5):
+        q.dequeue()
 
-	tc.assertFalse(q.empty())
-	tc.assertEqual(q.data.count(None), 9)
-	tc.assertEqual(q.head, q.t)
-	tc.assertEqual(q.head, 5)
+    tc.assertFalse(q.empty())
+    tc.assertEqual(q.data.count(None), 9)
+    tc.assertEqual(q.head, q.tail)
+    tc.assertEqual(q.head, 5)
 
-	for i in range(9):
-	    q.enqueue(i)
+    for i in range(9):
+        q.enqueue(i)
 
-	with tc.assertRaises(RuntimeError):
-	    q.enqueue(10)
+    with tc.assertRaises(RuntimeError):
+        q.enqueue(10)
 
-	for x, y in zip(q, [5] + list(range(9))):
-	    tc.assertEqual(x, y)
+    for x, y in zip(q, [5] + list(range(9))):
+        tc.assertEqual(x, y)
 
-	tc.assertEqual(q.dequeue(), 5)
-	for i in range(9):
-	    tc.assertEqual(q.dequeue(), i)
+    tc.assertEqual(q.dequeue(), 5)
+    for i in range(9):
+        tc.assertEqual(q.dequeue(), i)
 
-	tc.assertTrue(q.empty())
+    tc.assertTrue(q.empty())
 
 # points: 14
 def test_queue_implementation_3():
