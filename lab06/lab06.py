@@ -251,7 +251,7 @@ class Queue:
             self.head = (self.head + 1) % self.len
             return temp
 
-    def resize(self, newsize): ### TEST
+    def resize(self, newsize):
         assert(newsize > len(self.data))
         newarray = [None]
         for x in range(newsize-1):
@@ -309,7 +309,7 @@ def test_queue_implementation_1():
         q.enqueue(i)
        # print(f' finished {i} ')
     
-
+    #print('f')
     
    
     
