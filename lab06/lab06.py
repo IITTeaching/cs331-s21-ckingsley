@@ -51,6 +51,21 @@ def check_delimiters(expr):
     delim_closers = '})]>'
 
     ### BEGIN SOLUTION
+   
+    s = Stack()
+    for c in expr:
+        if c in delim_openers:
+            s.push(c)
+        if c in delim_closers:
+            if s.empty():
+                return False
+            else: #basically i am checking if the character "c" (which is a closing delimiter, by the way) is the pair of the delimiter being popped off the stack. So if c is "[" and popped is "]" then nothing happens (and we proceed.) However if c is "[" and p is ")" then we return False. 
+                popped = s.pop()
+                cindex = delim_closers.find(c)
+                pindex = delim_openers.find(popped)
+                if cindex != pindex:
+                    return False
+    return s.empty()
     ### END SOLUTION
 
 ################################################################################
@@ -121,6 +136,56 @@ def infix_to_postfix(expr):
     postfix = []
     toks = expr.split()
     ### BEGIN SOLUTION
+    def is_int(c):
+        try:
+            i = int(c)
+        except ValueError:
+            return False
+        return True
+    
+    def is_parens(c):
+        return c in '()'
+
+    def is_op(c):
+        return c in '+-*/'
+    
+
+    for c in toks:
+        if is_int(c):
+            postfix.append(c)
+
+        elif is_parens(c):
+            if c == '(':
+                ops.push(c)
+            elif c == ')':
+                for elem in ops:
+                    if elem == '(':
+                        break
+                    else:
+                        postfix.append(elem)
+                        ops.pop()
+                ##now, the final remaining element in 'ops' should be '(', and I remove it from the stack.
+                ops.pop()
+
+        elif is_op(c):
+            if ops.empty():
+                ops.push(c)
+            else:
+                #compare precenedence between top of "ops" stack and "c"
+                if ops.peek() != '(' and prec[c] <= prec[ops.peek()]:
+                    for elem in ops:
+                        if elem == '(' or prec[elem] < prec[c]:
+                            break
+                        else:
+                            postfix.append(elem)
+                            ops.pop()
+                
+                ops.push(c)
+                
+    for elem in ops:
+        if not is_parens(elem):
+            postfix.append(elem)
+
     ### END SOLUTION
     return ' '.join(postfix)
 
@@ -157,29 +222,58 @@ def test_infix_to_postfix_3():
 ################################################################################
 class Queue:
     def __init__(self, limit=10):
+        self.len = limit
         self.data = [None] * limit
         self.head = -1
         self.tail = -1
 
-    ### BEGIN SOLUTION
-    ### END SOLUTION
-
     def enqueue(self, val):
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        if (self.tail + 1) % self.len == self.head:
+            raise RuntimeError
+        elif self.head == -1:
+            self.head = self.tail = 0
+            self.data[self.tail] = val
+        else:
+            self.tail = (self.tail + 1) % self.len
+            self.data[self.tail] = val
 
     def dequeue(self):
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        if self.head == -1:
+            raise RuntimeError
+        elif self.head == self.tail:
+            temp = self.data[self.head]
+            self.data[self.head] = None
+            self.head = self.tail = -1
+            return temp
+        else:
+            temp = self.data[self.head]
+            self.data[self.head] = None
+            self.head = (self.head + 1) % self.len
+            return temp
 
     def resize(self, newsize):
-        assert(len(self.data) < newsize)
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        assert(newsize > len(self.data))
+        newarray = [None]
+        for x in range(newsize-1):
+            newarray.append([None])
+
+        for i in range(self.len):
+            newarray[i] = self.dequeue()
+        
+        self.data = newarray
+        
+        self.head = 0
+        self.tail = self.len-1
+
+
+        self.len = newsize
 
     def empty(self):
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        for i in range(self.len):
+            if self.data[i] != None:
+                return False
+
+        return True
 
     def __bool__(self):
         return not self.empty()
@@ -187,14 +281,15 @@ class Queue:
     def __str__(self):
         if not(self):
             return ''
-        return ', '.join(str(x) for x in self)
+        return ', '.join(str(el) for el in self)
 
     def __repr__(self):
         return str(self)
 
     def __iter__(self):
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        for i in range(self.head, self.tail+1):
+            yield self.data[i]
+
 
 ################################################################################
 # QUEUE IMPLEMENTATION - TEST CASES
@@ -207,50 +302,68 @@ def test_queue_implementation_1():
     q = Queue(5)
     tc.assertEqual(q.data, [None] * 5)
 
+   # print('got here')
+    
     for i in range(5):
+        #print(f' started {i}')
         q.enqueue(i)
+       # print(f' finished {i} ')
+    
+    #print('f')
+    
+   
+    
 
-    with tc.assertRaises(RuntimeError):
+    with tc.assertRaises(RuntimeError): 
         q.enqueue(5)
 
-    for i in range(5):
-        tc.assertEqual(q.dequeue(), i)
+    
+    
+    #print(f'q after enqueuing: {[ elem for elem in q.data ]}')
+   # print(f'tail: {q.tail}')
 
+    for i in range(5):
+        #print(f'q: {[ elem for elem in q.data ]}')
+        #print(f' being dequeued: {q.data[q.head + 1]}, i: {i}')
+        tc.assertEqual(q.dequeue(), i)
+        #print(f' finished {i}')
+
+    #print(f'tail: {q.tail}, head: {q.head}')
     tc.assertTrue(q.empty())
 
 # points: 13
 def test_queue_implementation_2():
-	tc = TestCase()
+    tc = TestCase()
 
-	q = Queue(10)
+    q = Queue(10)
 
-	for i in range(6):
-	    q.enqueue(i)
+    for i in range(6):
+        q.enqueue(i)
 
-	tc.assertEqual(q.data.count(None), 4)
+    tc.assertEqual(q.data.count(None), 4)
 
-	for i in range(5):
-	    q.dequeue()
+    for i in range(5):
+        q.dequeue()
 
-	tc.assertFalse(q.empty())
-	tc.assertEqual(q.data.count(None), 9)
-	tc.assertEqual(q.head, q.tail)
-	tc.assertEqual(q.head, 5)
+    tc.assertFalse(q.empty())
+    tc.assertEqual(q.data.count(None), 9)
+    tc.assertEqual(q.head, q.tail)
+    tc.assertEqual(q.head, 5)
 
-	for i in range(9):
-	    q.enqueue(i)
+    for i in range(9):
+        q.enqueue(i)
 
-	with tc.assertRaises(RuntimeError):
-	    q.enqueue(10)
+    with tc.assertRaises(RuntimeError):
+        q.enqueue(10)
 
-	for x, y in zip(q, [5] + list(range(9))):
-	    tc.assertEqual(x, y)
+    for x, y in zip(q, [5] + list(range(9))):
+        tc.assertEqual(x, y)
 
-	tc.assertEqual(q.dequeue(), 5)
-	for i in range(9):
-	    tc.assertEqual(q.dequeue(), i)
+    tc.assertEqual(q.dequeue(), 5)
+    for i in range(9):
+        tc.assertEqual(q.dequeue(), i)
 
-	tc.assertTrue(q.empty())
+    tc.assertTrue(q.empty())
 
 # points: 14
 def test_queue_implementation_3():

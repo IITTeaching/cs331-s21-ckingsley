@@ -128,8 +128,8 @@ def gen_passage(ngram_dict, length=100):
 def test2():
     """Test case for random passage generation."""
     tc = TestCase()
-   random.seed(1234)
-   simple_toks = [t.lower() for t in 'I really really like cake.'.split()]
+    random.seed(1234)
+    simple_toks = [t.lower() for t in 'I really really like cake.'.split()]
    
     tc.assertEqual(gen_passage(compute_ngrams(simple_toks), 10),
                   'like cake. i really really really really like cake. i')

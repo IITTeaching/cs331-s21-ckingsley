@@ -345,7 +345,10 @@ class ArrayList:
         ### BEGIN SOLUTION
         for i in range(self.len):
             yield self.data[i]
+<<<<<<< HEAD
+=======
 
+>>>>>>> 2bcebe2435c7540cebab3f1527e2897b1ba70202
         ### END SOLUTION
 
 ################################################################################
