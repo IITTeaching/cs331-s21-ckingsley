@@ -4,7 +4,7 @@ from unittest import TestCase
 ################################################################################
 # EXTENSIBLE HASHTABLE
 ################################################################################
-class ExtensibleHashTable: ###should these be kv pairs???
+class ExtensibleHashTable:
 
     def __init__(self, n_buckets=1000, fillfactor=0.5):
         self.n_buckets = n_buckets
