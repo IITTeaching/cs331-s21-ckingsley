@@ -4,7 +4,7 @@ from unittest import TestCase
 ################################################################################
 # EXTENSIBLE HASHTABLE
 ################################################################################
-class ExtensibleHashTable: ###should these be kv pairs???
+class ExtensibleHashTable:
 
     def __init__(self, n_buckets=1000, fillfactor=0.5):
         self.n_buckets = n_buckets
@@ -58,16 +58,21 @@ class ExtensibleHashTable: ###should these be kv pairs???
             self.rebuild()
         
         h = hash(key) % self.n_buckets
+       
         while self.buckets[h] and self.buckets[h][0]:
-            if self.buckets[h][0] == key: break
-            h += 1
-            if h == self.n_buckets: h = 0
-        self.nitems += 1
+            if self.buckets[h][0] == key: 
+                break
+            elif h == (self.n_buckets - 1):
+                h = 0
+            else:
+                h += 1
+
         self.buckets[h] = (key, value)
+        self.nitems += 1
 
     def __delitem__(self, key):
         index = self.find_index(key)
-        self.buckets[index] = (None, None) #this homie was deleted, marker to signify
+        self.buckets[index] = (None, None) #marker
         self.nitems -= 1
 
     def __contains__(self, key):
