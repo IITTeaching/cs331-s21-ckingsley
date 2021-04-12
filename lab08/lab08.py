@@ -264,6 +264,7 @@ def test_median_2():
 
 
 
+
 # MUST COMPLETE IN UNDER 10 seconds!
 # (14 points)
 def test_median_3():
@@ -273,7 +274,7 @@ def test_median_3():
     m_final = sorted(vals)[len(vals)//2]
     running = running_medians(vals)
     tc.assertEqual(m_mid, running[50000])
-    tc.assertEqual(m_final, running[-1])
+    tc.assertEqual(m_final, running[-1]) #works
 
 
 ################################################################################
