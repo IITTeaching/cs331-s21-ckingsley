@@ -22,12 +22,66 @@ class Heap:
     def _right(idx):
         return idx*2+2
 
-    def heapify(self, idx=0):
+    def switch_node(self, parent, child): 
+        parentval = self.data[parent]
+        childval = self.data[child]
+        self.data[parent] = childval
+        self.data[child] = parentval
+    
+    def pos_exists(self, n):
+        return n < len(self)
+
+    def trickle_up(self, n):
+        p = Heap._parent(n)
+        if p >= 0: 
+            pval = self.key(self.data[p])
+            curval = self.key(self.data[n])
+            if pval < curval:
+                self.switch_node(p, n)
+                self.trickle_up(p)
+        
+    def trickle_down(self, n): 
+        lc = Heap._left(n)
+        rc = Heap._right(n)
+
+        if self.pos_exists(n):
+            curval = self.key(self.data[n])
+    
+            if self.pos_exists(lc):
+                lcval = self.key(self.data[lc])
+            
+                if self.pos_exists(rc):
+                    rcval = self.key(self.data[rc])
+                
+                    if rcval > lcval:
+                        if rcval > curval:  
+                            self.switch_node(n, rc)
+                            self.trickle_down(rc)
+                
+                    elif lcval > curval:  ##scenario: rc exists but is smaller than lcval. Look to lc.
+                        self.switch_node(n, lc)
+                        self.trickle_down(lc)
+
+                elif lcval > curval: ##scenario: rc does not exist. Look to lc.
+                        self.switch_node(n, lc)
+                        self.trickle_down(lc)
+    
+        #finished. No left child --> no right child, no more children.
+
+
+    def heapify(self, idx=0, trickledown = True):
         ### BEGIN SOLUTION
+        if trickledown:
+            self.trickle_down(idx)
+        else: 
+            self.trickle_up(idx)
+    
         ### END SOLUTION
 
     def add(self, x):
         ### BEGIN SOLUTION
+        self.data.append(x)
+        self.heapify(len(self) - 1, False)
         ### END SOLUTION
 
     def peek(self):
@@ -122,14 +176,59 @@ def test_key_heap_5():
     for x in lst:
         h.add(x)
 
+   
     for x in reversed(sorted(range(-1000, 1000, 3), key=lambda x:abs(x))):
         tc.assertEqual(x, h.pop())
+       
 
 ################################################################################
 # 2. MEDIAN
 ################################################################################
 def running_medians(iterable):
     ### BEGIN SOLUTION
+    def rearrange(greater, smaller):
+        g = len(greater)
+        s = len(smaller)
+        
+        if g > s: #logic: median will lie between least value of greater and 2nd least value of greater. Thus can 'intelligently' pop() on greater 'in advance' since we know the min value of greater **will be** less than the **upcoming** future median
+            while g - s > 1:
+                smaller.add(greater.pop())
+        elif s > g:
+            while s - g > 1:
+                greater.add(smaller.pop())
+        
+            
+
+    smaller = Heap(lambda x: x) #max heap
+    greater = Heap(lambda x: -x) #min heap
+    medians = []
+
+    for x in enumerate(iterable):
+        if len(medians) == 0:
+            greater.add(x)
+        
+        elif x >= median: #? - does it matter where the = goes?
+            greater.add(x)
+        else:  
+            smaller.add(x)
+
+        
+        if abs(len(greater) - len(smaller)) > 1:
+            rearrange(greater, smaller)
+        
+        g = len(greater)
+        s = len(smaller)
+        median = None
+        if g == s:
+            median = (greater + smaller) / 2
+        elif g > s:
+            median = greater.peek()
+        elif s > g:
+            median = smaller.peek()
+        medians.append(median)
+
+    return medians
+
     ### END SOLUTION
 
 ################################################################################
@@ -150,6 +249,11 @@ def running_medians_naive(iterable):
 # (13 points)
 def test_median_1():
     tc = TestCase()
+
+    #edit
+    ans = running_medians([3, 1, 9, 25, 12])
+    #/edit
+
     tc.assertEqual([3, 2.0, 3, 6.0, 9], running_medians([3, 1, 9, 25, 12]))
 
 # (13 points)
@@ -174,6 +278,7 @@ def test_median_3():
 ################################################################################
 def topk(items, k, keyf):
     ### BEGIN SOLUTION
+    pass
     ### END SOLUTION
 
 ################################################################################

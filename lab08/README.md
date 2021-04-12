@@ -1,4 +1,4 @@
-# Lab 8 - Heaps
+  ff# Lab 8 - Heaps
 
 For this assignment you will start by modifying the heap data stucture implemented in class to allow it to keep its elements sorted by an arbitrary priority (identified by a `key` function), then use the augmented heap to efficiently compute the running median of a set of numbers.
 
