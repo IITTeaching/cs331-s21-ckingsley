@@ -187,23 +187,20 @@ def test_key_heap_5():
 def running_medians(iterable):
     ### BEGIN SOLUTION
     def rearrange(greater, smaller):
-        g = len(greater)
-        s = len(smaller)
-        
         if g > s: #logic: median will lie between least value of greater and 2nd least value of greater. Thus can 'intelligently' pop() on greater 'in advance' since we know the min value of greater **will be** less than the **upcoming** future median
-            while g - s > 1:
+            while len(greater) - len(smaller) > 1:  #must be dynamically evaluated in while loop b/c len of smaller & greater are changing!!
                 smaller.add(greater.pop())
         elif s > g:
-            while s - g > 1:
+            while len(smaller) - len(greater) > 1:
                 greater.add(smaller.pop())
         
             
 
-    smaller = Heap(lambda x: x) #max heap
-    greater = Heap(lambda x: -x) #min heap
+    smaller = Heap(key = lambda x: x) #max heap
+    greater = Heap(key = lambda x: -1 * x) #boris was wrong about "x: -x". It needs to be "x: -1 * x"
     medians = []
 
-    for x in enumerate(iterable):
+    for i, x in enumerate(iterable): #saucy boi right here, i is unused but needs to be there so we're not adding tuples
         if len(medians) == 0:
             greater.add(x)
         
@@ -220,7 +217,7 @@ def running_medians(iterable):
         s = len(smaller)
         median = None
         if g == s:
-            median = (greater + smaller) / 2
+            median = (greater.peek() + smaller.peek()) / 2
         elif g > s:
             median = greater.peek()
         elif s > g:
@@ -260,7 +257,12 @@ def test_median_1():
 def test_median_2():
     tc = TestCase()
     vals = [random.randrange(10000) for _ in range(1000)]
+
+
     tc.assertEqual(running_medians_naive(vals), running_medians(vals))
+
+
+
 
 # MUST COMPLETE IN UNDER 10 seconds!
 # (14 points)
@@ -273,12 +275,34 @@ def test_median_3():
     tc.assertEqual(m_mid, running[50000])
     tc.assertEqual(m_final, running[-1])
 
+
 ################################################################################
 # 3. TOP-K
 ################################################################################
 def topk(items, k, keyf):
     ### BEGIN SOLUTION
-    pass
+    
+    #min heap
+    h = Heap(lambda x: -1 * keyf(x))
+
+    for x in items: 
+        
+        if len(h) < k: #can add regardless of what val is
+            h.add(x)
+
+        else:            
+            smallestval = keyf(h.peek()) #it is a min heap
+            curval = keyf(x)
+
+
+            if curval > smallestval:
+                h.pop()
+                h.add(x)
+    
+    
+    rev = list(reversed(list(h))) #MY EYES, MY EYES!!!! 
+    return rev
+   
     ### END SOLUTION
 
 ################################################################################
@@ -296,8 +320,11 @@ def test_topk_students():
     tc = TestCase()
     students = [ ('Peter', 33), ('Bob', 23), ('Alice', 21), ('Gertrud', 53) ]
 
-    tc.assertEqual(naive_topk(students, 2, get_age),
+    
+    #test cases may need modification, I had to return list(reversed(list(h)))
+    tc.assertEqual(naive_topk(students, 2, get_age), 
                    topk(students, 2, get_age))
+
 
     tc.assertEqual(naive_topk(students, 1, get_age),
                    topk(students, 1, get_age))
