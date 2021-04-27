@@ -1,11 +1,8 @@
-#changes
-
 from unittest import TestCase
 import random
 
 class HBStree:
     """This is an immutable binary search tree with history.
-
     Each insert and delete operation creates a new version of the tree. The data
     structure allows past versions to be accessed.
     """
@@ -53,6 +50,15 @@ class HBStree:
         KeyError, if key does not exist.
         """
         # BEGIN SOLUTION
+        curtree = self.get_current_root()
+        while curtree:
+            if key == curtree.val:
+                return key
+            elif key < curtree.val:
+                curtree = curtree.left
+            else:
+                curtree = curtree.right
+        raise KeyError
         # END SOLUTION
 
     def __contains__(self, el):
@@ -60,6 +66,12 @@ class HBStree:
         Return True if el exists in the current version of the tree.
         """
         # BEGIN SOLUTION
+        try:
+            self.__getitem__(el)
+            return True
+        except:
+            return False
+
         # END SOLUTION
 
     def insert(self,key):
@@ -69,13 +81,62 @@ class HBStree:
         from creating a new version.
         """
         # BEGIN SOLUTION
+        def ins_rec(key, root):
+            if not root or root.val == key:
+                ##insert the key at this posiiton
+                return HBStree().INode(key, None, None)
+            else:
+                val = root.val
+                left = root.left
+                right = root.right
+            
+                if key < val:
+                    return HBStree().INode(val, ins_rec(key, left), right)
+                elif key > val:
+                    return HBStree().INode(val, left, ins_rec(key, right))
+
+
+
+        if not self.__contains__(key):
+            curtree = self.get_current_root()
+            self.root_versions.append(ins_rec(key, curtree))
+        else:
+            return 
         # END SOLUTION
 
     def delete(self,key):
         """Delete key from the tree, creating a new version of the tree. If key does not exist in the current version of the tree, then do nothing and refrain from creating a new version."""
         # BEGIN SOLUTION
-        # END SOLUTION
+        k = self.root_versions[-1]
+        if self.__contains__(key):
+            if self.__len__() <= 1:
+                self.root_versions.append(None)
+                return
 
+            def rec_del(r,key):
+                if r.val == key:
+                    if not r.left:
+                        if not r.right:
+                            return None
+                        else:
+                            return r.right
+                    elif not r.right:
+                        return r.left
+                    else:
+                        k = r.left
+                        b = True
+                        while k.right:
+                                k = k.right
+                        return self.INode(r.val,r.left,rec_del(r.right,key))
+                elif key<r.val:
+                    return self.INode(r.val, rec_del(r.left,key), r.right)
+                else:
+                    return self.INode(r.val, r.left,rec_del(r.right,key))
+
+            self.root_versions.append(rec_del(k,key))
+        # END SOLUTION
+        
+        
     @staticmethod
     def subtree_size(node):
         """
@@ -145,6 +206,15 @@ class HBStree:
         if timetravel < 0 or timetravel >= len(self.root_versions):
             raise IndexError(f"valid versions for time travel are 0 to {len(self.root_versions) -1}, but was {timetravel}")
         # BEGIN SOLUTION
+        def rec_iter(r):
+            if r: 
+                yield from rec_iter(r.left)
+                yield r.val
+                yield from rec_iter(r.right)
+
+        yield from rec_iter(self.root_versions[(-1)-timetravel])
+            
+            
         # END SOLUTION
 
     @staticmethod
