@@ -40,20 +40,23 @@ class AVLTree:
     def rebalance(t):
         ### BEGIN SOLUTION
 
-        if t:
-            bf = AVLTree.balance_factor(t)
-            
-            if bf < -1:
-                bfr = AVLTree.balance_factor(t.right)
-                if bfr > 0:
-                    t.right.rotate_right()
-                t.rotate_left()
+        if not t:
+            pass
 
-            elif bf > 1:
-                bfl = AVLTree.balance_factor(t.left)
-                if bfl < 0:
-                    t.left.rotate_left()
-                t.rotate_right()
+
+        bf = AVLTree.balance_factor(t)
+        
+        if bf < -1:
+            bfr = AVLTree.balance_factor(t.right)
+            if bfr > 0:
+                t.right.rotate_right()
+            t.rotate_left()
+
+        elif bf > 1:
+            bfl = AVLTree.balance_factor(t.left)
+            if bfl < 0:
+                t.left.rotate_left()
+            t.rotate_right()
 
         ### END SOLUTION
 
