@@ -117,7 +117,7 @@ class AVLTree:
                 
 
         self.root = rec_del(self.root, val)
-        self.size += -1
+        self.size -= 1
 
         ### END SOLUTION
 
