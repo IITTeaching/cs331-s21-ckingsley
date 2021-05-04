@@ -42,16 +42,18 @@ class AVLTree:
 
         if t:
             bf = AVLTree.balance_factor(t)
-            if bf > 1:
-                bfl = AVLTree.balance_factor(t.left)
-                if bfl < 0:
-                    t.left.rotate_left()
-                t.rotate_right()
-            elif bf < -1:
+            
+            if bf < -1:
                 bfr = AVLTree.balance_factor(t.right)
                 if bfr > 0:
                     t.right.rotate_right()
                 t.rotate_left()
+
+            elif bf > 1:
+                bfl = AVLTree.balance_factor(t.left)
+                if bfl < 0:
+                    t.left.rotate_left()
+                t.rotate_right()
 
         ### END SOLUTION
 
