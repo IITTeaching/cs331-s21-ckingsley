@@ -17,7 +17,7 @@ def mysort(lst: List[T], compare: Callable[[T, T], int]) -> List[T]:
             elif(result == -1 or result == 0): #left less than or equal to right
                 pass
     return lst
-    
+
     """
     This method should sort input list lst of elements of some type T.
 
@@ -29,12 +29,12 @@ def mysort(lst: List[T], compare: Callable[[T, T], int]) -> List[T]:
 
 
 def mybinsearch(lst: List[T], elem: S, compare: Callable[[T, S], int]) -> int:
-        start = 0 
+        start = 0
         end = len(lst)
         while(start <= end and end <=len(lst)):
-            mid = int((start+end)/2)  
+            mid = int((start+end)/2)
             if mid==len(lst):
-                return -1       
+                return -1
             result = compare(lst[mid], elem)
             if(result == 0):
                 return mid
@@ -144,10 +144,10 @@ class PrefixSearcher():
                 end = len(document)
             substr = document[start:end]
             lst.append(substr)
-        
+
         prefixcmp = lambda x,y: 0 if x == y else -1 if x < y else 1
         self.lst = mysort(lst, prefixcmp)
-        
+
 
 
     def search(self, q):
@@ -158,8 +158,8 @@ class PrefixSearcher():
         Exception.
         """
         if len(q) > self.maximum:
-            raise Exception("String being searched is greater than maximum search string value permitted by PrefixSearcher.") 
-        for elem in self.lst: ##linear search 
+            raise Exception("String being searched is greater than maximum search string value permitted by PrefixSearcher.")
+        for elem in self.lst: ##linear search
             if q in elem:
                 return True
         return False
@@ -208,9 +208,9 @@ class SuffixArray():
             suff = document[i:]
             self.lst.append(suff)
         #for i in range (0, len(document)):
-        #    lst[i] = 
+        #    lst[i] =
         self.lst = mysort(self.lst, sufcomp)
-        
+
 
 
     def positions(self, searchstr: str):
@@ -224,11 +224,11 @@ class SuffixArray():
         """
         Returns all the positions of searchstr in the documented indexed by the suffix array.
         """
-        
+
 
     def contains(self, searchstr: str):
         result = self.positions(searchstr)
-        
+
         if result == []: ##empty array, means that no positions were found of searchstr
             return False
         else:
@@ -266,11 +266,7 @@ def test3_2():
     md_url = 'https://www.gutenberg.org/files/2701/2701-0.txt'
     md_text = urllib.request.urlopen(md_url).read().decode()
     s = SuffixArray(md_text[0:1000])
-<<<<<<< HEAD
-    #tc.assertTrue(s.contains("Moby Dick"))
-=======
     tc.assertTrue(s.contains("Moby-Dick"))
->>>>>>> 2bcebe2435c7540cebab3f1527e2897b1ba70202
     tc.assertTrue(s.contains("Herman Melville"))
     posset = set(s.positions("Moby-Dick"))
     tc.assertEqual(posset, {355, 356})
