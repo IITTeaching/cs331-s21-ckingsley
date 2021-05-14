@@ -1,6 +1,5 @@
 import urllib
 import urllib.request
-import builtins
 from unittest import TestCase
 
 
@@ -98,7 +97,6 @@ def queuesToArray(queues, num_bytes):
     return arr
 
 
-
 ##### TEST CASES ######
 def test1():
     arr = [b"Zucchini", b"Zeugma", b"Yam", b"Yu", b"Xtreme", b"Baller", b"Doot", b"Spider", b"Hacc", b"Potato", b"Corn", b"Dublin", b"Daconvertible"]
@@ -106,7 +104,6 @@ def test1():
     radix_sorted = radix_sort(arr)
     
     tc = TestCase()
-
     tc.assertEqual(python_sorted, radix_sorted)
 
 def test2():
@@ -117,9 +114,6 @@ def test2():
 
     tc.assertEqual(python_sorted, radix_sorted)
 
-
-
-    
 
 def say_test(f):
     print(80 * "#" + "\n" + f.__name__ + "\n" + 80 * "#" + "\n")
